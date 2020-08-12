@@ -2,29 +2,49 @@
 
 # autoalias: a tool that looks at your bash history and suggests aliases. 
 # could be cool to add AI or something
-# 
 
-SHELL_HISTORY = "/home/nebb/.bash_history"
-LENGTH_THRESHOLD = 3
+from docopt import docopt
 
-with open(SHELL_HISTORY, "r") as history:
-   commands = history.read()
+HELP_MSG="""autoalias
 
-commands = commands.splitlines()
+Usage:
+    autoalias <history_file> <length_threshold>
 
-def list_duplicates(seq):
-  seen = set()
-  seen_add = seen.add
-  seen_twice = set( x for x in seq if x in seen or seen_add(x) )
-  return list( seen_twice )
+Arguments:
+    history_file    Where your command history is. If you don't know, it's probably "/home/yourusername/.bash_history"
+    length_threshold    How long a command needs to be (in words) in order for it to be suggested
 
-possible_alias = list_duplicates(commands)
-suggestions = []
+Options:
+    -h --help   Show this message and exit.
+    -v --version    Get version information and exit.
+"""
+def main():
+    args = docopt(HELP_MSG, version='autoalias 0.0 - Testing')
 
-for x in range(len(possible_alias)):
-  if len(possible_alias[x].split()) > LENGTH_THRESHOLD:
-      suggestions.append(possible_alias[x])
-  else:
-      pass
+    SHELL_HISTORY = args["<history_file>"]
+    LENGTH_THRESHOLD = int(args["<length_threshold>"])
 
-print('\n'.join(suggestions))
+    with open(SHELL_HISTORY, "r") as history:
+        commands = history.read()
+
+    commands = commands.splitlines()
+
+    def list_duplicates(seq):
+        seen = set()
+        seen_add = seen.add
+        seen_twice = set( x for x in seq if x in seen or seen_add(x) )
+        return list( seen_twice )
+
+    possible_alias = list_duplicates(commands)
+    suggestions = []
+
+    for x in range(len(possible_alias)):
+        if len(possible_alias[x].split()) > LENGTH_THRESHOLD:
+            suggestions.append(possible_alias[x])
+        else:
+            pass
+
+    print('\n'.join(suggestions))
+
+if __name__=='__main__':
+    main()
