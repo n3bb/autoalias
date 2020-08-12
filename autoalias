@@ -1,0 +1,30 @@
+#!/usr/bin/python3
+
+# autoalias: a tool that looks at your bash history and suggests aliases. 
+# could be cool to add AI or something
+# 
+
+SHELL_HISTORY = "/home/nebb/.bash_history"
+LENGTH_THRESHOLD = 3
+
+with open(SHELL_HISTORY, "r") as history:
+   commands = history.read()
+
+commands = commands.splitlines()
+
+def list_duplicates(seq):
+  seen = set()
+  seen_add = seen.add
+  seen_twice = set( x for x in seq if x in seen or seen_add(x) )
+  return list( seen_twice )
+
+possible_alias = list_duplicates(commands)
+suggestions = []
+
+for x in range(len(possible_alias)):
+  if len(possible_alias[x].split()) > LENGTH_THRESHOLD:
+      suggestions.append(possible_alias[x])
+  else:
+      pass
+
+print('\n'.join(suggestions))
